@@ -1,32 +1,38 @@
-const express = require("express");
-const app = express();
+const express = require('express')
+const app = express()
 
-const port = 8000;
+const port = 8000
 
-app.get("/", (req, res) => {
-  console.log("Client connected");
+// TODO: Change this to increase or decrease the response interval time
+const intervalSeconds = 1
 
-  res.setHeader("Content-Type", "text/event-stream");
-  // res.setHeader("Content-Length", "0");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+app.get('/sse', (req, res) => {
+  console.log('Client connected')
 
-  // res.socket.setTimeout(0);
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+
+  // TODO: Uncomment this to test if the browser reconnects after each response to the client
+  // res.setHeader("Content-Length", "0")
+
+  // TODO: This is for testing timeouts
+  // res.socket.setTimeout(0)
+
+  res.write(`data: ${new Date().toLocaleString()}\n\n`)
 
   const invalidId = setInterval(() => {
-    const date = new Date().toLocaleString();
+    res.write(`data: ${new Date().toLocaleString()}\n\n`)
+  }, intervalSeconds * 1000)
 
-    res.write(`data: ${date}\n\n`);
-  }, 60000);
+  res.on('close', () => {
+    console.log('Client closed connection')
 
-  res.on("close", () => {
-    console.log("Client closed connection");
+    clearInterval(invalidId)
 
-    clearInterval(invalidId);
-
-    res.end();
-  });
-});
+    res.end()
+  })
+})
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+  console.log(`Server running on port ${port}`)
+})
