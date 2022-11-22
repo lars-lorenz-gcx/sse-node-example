@@ -1,0 +1,14 @@
+{
+  "name": "sse",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "version": "1.0.0",
+  "scripts": {
+    "server": "yarn workspace server start",
+    "client": "yarn workspace client start",
+    "start": "yarn server & yarn client"
+  }
+}
